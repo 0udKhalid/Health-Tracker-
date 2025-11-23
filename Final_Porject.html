@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق صحتي - Health Tracker</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts (Cairo for Arabic) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Config for Tailwind -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Enabled class-based dark mode for better control
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#10b981', // Emerald 500
+                        secondary: '#3b82f6', // Blue 500
+                        accent: '#f59e0b', // Amber 500
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles */
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .page-section {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .page-section.active {
+            display: block; /* Show when active */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Utility for dark mode form elements */
+        .dark input, .dark select, .dark textarea {
+            background-color: #374151; /* gray-700 */
+            color: #fff;
+            border-color: #4b5563; /* gray-600 */
+        }
+    </style>
+</head>
+<body class="text-gray-800 bg-gray-50 min-h-screen flex flex-col dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Navbar -->
+    <!-- Added dark:bg-gray-800 and dark:text-white to ensure visibility in dark mode -->
+    <nav class="bg-white shadow-md sticky top-0 z-50 dark:bg-gray-800 dark:text-white transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" onclick="navigateTo('home')" class="text-2xl font-bold text-primary flex items-center gap-2">
+                <i class="fa-solid fa-heart-pulse"></i> صحتي
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-6 space-x-reverse items-center">
+                <button onclick="navigateTo('home')" class="hover:text-primary transition">الرئيسية</button>
+                <button onclick="navigateTo('water')" class="hover:text-secondary transition">الماء</button>
+                <button onclick="navigateTo('habits')" class="hover:text-accent transition">العادات</button>
+                <button onclick="navigateTo('calories')" class="hover:text-red-500 transition">السعرات</button>
+                <button onclick="navigateTo('meal')" class="hover:text-green-600 transition">وجبتي</button>
+                <button onclick="navigateTo('contact')" class="hover:text-gray-500 transition dark:hover:text-gray-300">تواصل معنا</button>
+                
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="bg-gray-200 text-gray-800 p-2 rounded-full hover:bg-gray-300 dark:bg-gray-700 dark:text-yellow-300 transition">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-2xl focus:outline-none dark:text-white" onclick="toggleMobileMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t p-4 flex flex-col space-y-3 dark:bg-gray-800 dark:text-white dark:border-gray-700">
+            <button onclick="navigateTo('home')" class="text-right py-2 border-b dark:border-gray-700">الرئيسية</button>
+            <button onclick="navigateTo('water')" class="text-right py-2 border-b dark:border-gray-700">تتبع الماء</button>
+            <button onclick="navigateTo('habits')" class="text-right py-2 border-b dark:border-gray-700">العادات اليومية</button>
+            <button onclick="navigateTo('calories')" class="text-right py-2 border-b dark:border-gray-700">عد السعرات</button>
+            <button onclick="navigateTo('meal')" class="text-right py-2 border-b dark:border-gray-700">وجبة اليوم</button>
+            <button onclick="navigateTo('contact')" class="text-right py-2 border-b dark:border-gray-700">تواصل معنا</button>
+            <button onclick="toggleTheme()" class="text-right py-2">تغيير الثيم</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+
+        <!-- 1. INDEX.HTML (Home Page) -->
+        <section id="home" class="page-section active">
+            <div class="text-center py-12">
+                <h1 class="text-4xl font-bold mb-4 text-primary">مرحباً بك في تطبيق صحتي</h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto dark:text-gray-300">
+                    رفيقك اليومي لبناء عادات صحية، تتبع شرب الماء، مراقبة السعرات الحرارية، واختيار وجبات صحية.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    <div onclick="navigateTo('water')" class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:-translate-y-1 border-t-4 border-blue-500 dark:bg-gray-800 dark:text-white">
+                        <i class="fa-solid fa-glass-water text-4xl text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">تتبع الماء</h3>
+                        <p class="text-gray-500 text-sm dark:text-gray-400">سجل أكواب الماء وحافظ على رطوبة جسمك.</p>
+                    </div>
+                    
+                    <div onclick="navigateTo('habits')" class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:-translate-y-1 border-t-4 border-yellow-500 dark:bg-gray-800 dark:text-white">
+                        <i class="fa-solid fa-list-check text-4xl text-yellow-500 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">العادات اليومية</h3>
+                        <p class="text-gray-500 text-sm dark:text-gray-400">التزم بعاداتك الصحية وحقق أهدافك.</p>
+                    </div>
+
+                    <div onclick="navigateTo('calories')" class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:-translate-y-1 border-t-4 border-red-500 dark:bg-gray-800 dark:text-white">
+                        <i class="fa-solid fa-calculator text-4xl text-red-500 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">حاسبة السعرات</h3>
+                        <p class="text-gray-500 text-sm dark:text-gray-400">راقب ما تأكله للحفاظ على وزن مثالي.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. WATER.HTML -->
+        <section id="water" class="page-section">
+            <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden dark:bg-gray-800">
+                <div class="bg-blue-500 p-6 text-white text-center">
+                    <h2 class="text-2xl font-bold mb-2">تتبع شرب الماء</h2>
+                    <p class="opacity-90">الهدف اليومي: <span id="water-goal-display">8</span> أكواب</p>
+                </div>
+                
+                <div class="p-8 text-center">
+                    <!-- Visualization -->
+                    <div class="relative w-40 h-40 mx-auto mb-6 flex items-center justify-center rounded-full border-8 border-blue-100 dark:border-gray-700">
+                        <div class="text-center z-10 dark:text-white">
+                            <span id="cups-count" class="text-4xl font-bold text-blue-600 dark:text-blue-400">0</span>
+                            <p class="text-gray-500 text-sm dark:text-gray-400">أكواب</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-gray-200 rounded-full h-4 mb-8 dark:bg-gray-700">
+                        <div id="water-progress" class="bg-blue-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex justify-center gap-4 mb-8">
+                        <button onclick="updateWater(-1)" class="w-12 h-12 rounded-full bg-red-100 text-red-500 hover:bg-red-200 transition text-xl dark:bg-red-900/30 dark:text-red-400">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <button onclick="updateWater(1)" class="w-12 h-12 rounded-full bg-blue-100 text-blue-500 hover:bg-blue-200 transition text-xl dark:bg-blue-900/30 dark:text-blue-400">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <!-- Special Logic Button -->
+                    <button onclick="saveWaterAndGoToHabits()" class="w-full bg-primary text-white font-bold py-3 rounded-lg shadow hover:bg-green-600 transition flex items-center justify-center gap-2">
+                        <span>تطبيق وانتقل للعادات</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. HABITS.HTML -->
+        <section id="habits" class="page-section">
+            <div class="max-w-2xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">قائمة العادات اليومية</h2>
+                    <span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-semibold dark:bg-yellow-900/50 dark:text-yellow-400">
+                        اليوم: <span id="current-date"></span>
+                    </span>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6 dark:bg-gray-800">
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="new-habit-input" placeholder="أضف عادة جديدة..." class="flex-grow p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <button onclick="addHabit()" class="bg-accent text-white px-6 rounded-lg hover:bg-yellow-600 transition">
+                            <i class="fa-solid fa-plus"></i> إضافة
+                        </button>
+                    </div>
+
+                    <ul id="habits-list" class="space-y-3">
+                        <!-- Habits will be injected here via JS -->
+                        <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg group hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" class="w-5 h-5 text-accent rounded focus:ring-accent">
+                                <span class="text-lg">قراءة 20 دقيقة</span>
+                            </label>
+                            <button class="text-red-400 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-trash"></i></button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. CALORIES.HTML -->
+        <section id="calories" class="page-section">
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden dark:bg-gray-800">
+                <div class="p-6 border-b dark:border-gray-700">
+                    <h2 class="text-2xl font-bold flex items-center gap-2 text-red-500">
+                        <i class="fa-solid fa-fire"></i> عداد السعرات الحرارية
+                    </h2>
+                </div>
+                
+                <div class="p-6">
+                    <!-- Input Form -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <input type="text" id="food-name" placeholder="اسم الوجبة (مثلاً: تفاحة)" class="p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <input type="number" id="food-cals" placeholder="السعرات" class="p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <button onclick="addFood()" class="bg-red-500 text-white p-3 rounded-lg hover:bg-red-600 font-bold">تسجيل</button>
+                    </div>
+
+                    <!-- List -->
+                    <div class="overflow-y-auto max-h-64 mb-6">
+                        <table class="w-full text-right">
+                            <thead class="bg-gray-100 text-gray-600 text-sm dark:bg-gray-700 dark:text-gray-300">
+                                <tr>
+                                    <th class="p-3">الطعام</th>
+                                    <th class="p-3">السعرات</th>
+                                    <th class="p-3 text-center">حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody id="food-list" class="dark:text-white">
+                                <!-- Items injected via JS -->
+                            </tbody>
+                        </table>
+                        <div id="empty-cal-msg" class="text-center text-gray-400 py-4">لم يتم تسجيل وجبات اليوم</div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="bg-gray-900 text-white p-4 rounded-lg flex justify-between items-center dark:bg-black">
+                        <span class="text-lg">المجموع الكلي:</span>
+                        <span class="text-2xl font-bold text-green-400"><span id="total-cals">0</span> سعرة</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. MEAL.HTML -->
+        <section id="meal" class="page-section">
+            <div class="text-center max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8 text-green-700 dark:text-green-400">اقتراح وجبة صحية</h2>
+                
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden group dark:bg-gray-800">
+                    <div class="h-48 bg-gray-200 relative overflow-hidden dark:bg-gray-700">
+                        <!-- Placeholder for food image using FontAwesome -->
+                        <div class="absolute inset-0 flex items-center justify-center bg-green-100 text-green-300 dark:bg-green-900/30">
+                            <i class="fa-solid fa-utensils text-6xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 id="meal-title" class="text-2xl font-bold mb-2 dark:text-white">سلطة الدجاج المشوي</h3>
+                        <p id="meal-desc" class="text-gray-600 mb-6 dark:text-gray-300">صدر دجاج مشوي مع خضروات موسمية، زيت زيتون، وعصير ليمون. وجبة متكاملة غنية بالبروتين والألياف.</p>
+                        
+                        <div class="flex justify-center gap-4">
+                            <button onclick="generateMeal()" class="px-6 py-2 border-2 border-green-500 text-green-600 rounded-full hover:bg-green-50 transition font-bold dark:hover:bg-gray-700">
+                                <i class="fa-solid fa-shuffle"></i> وجبة أخرى
+                            </button>
+                            <button onclick="addToFavorites()" class="px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition font-bold shadow-lg shadow-green-200 dark:shadow-none">
+                                <i class="fa-solid fa-heart"></i> إضافة للمفضلة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-right">
+                    <h4 class="font-bold text-lg mb-2 dark:text-white">الوجبات المفضلة:</h4>
+                    <ul id="fav-meals-list" class="list-disc list-inside text-gray-600 dark:text-gray-400">
+                        <!-- Favorites injected via JS -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. CONTACT.HTML -->
+        <section id="contact" class="page-section">
+            <div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg dark:bg-gray-800">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">تواصل معنا</h2>
+                
+                <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2 dark:text-gray-300">الاسم</label>
+                        <input type="text" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2 dark:text-gray-300">البريد الإلكتروني</label>
+                        <input type="email" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2 dark:text-gray-300">الرسالة</label>
+                        <textarea rows="4" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-secondary text-white font-bold py-3 rounded-lg hover:bg-blue-600 transition">
+                        إرسال الرسالة
+                    </button>
+                </form>
+
+                <div class="mt-6 flex justify-center gap-6 text-gray-400 text-xl">
+                    <a href="#" class="hover:text-blue-500"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="hover:text-pink-500"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="hover:text-blue-700"><i class="fa-brands fa-facebook"></i></a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-8 dark:bg-gray-950">
+        <p>&copy; 2023 تطبيق صحتي. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- GLOBAL.JS ---
+        function navigateTo(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            // Show target page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+            
+            // Scroll to top
+            window.scrollTo(0,0);
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleTheme() {
+            // Updated to toggle class on <html> for Tailwind 'class' mode
+            document.documentElement.classList.toggle('dark');
+            
+            const icon = document.getElementById('theme-icon');
+            if(document.documentElement.classList.contains('dark')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        // --- WATER.JS ---
+        let waterCount = 0;
+        const waterGoal = 8;
+
+        function updateWater(amount) {
+            waterCount += amount;
+            if (waterCount < 0) waterCount = 0;
+            
+            // UI Update
+            document.getElementById('cups-count').innerText = waterCount;
+            const percentage = Math.min((waterCount / waterGoal) * 100, 100);
+            document.getElementById('water-progress').style.width = percentage + '%';
+        }
+
+        function saveWaterAndGoToHabits() {
+            // Simulate saving data logic here...
+            alert(`تم تسجيل ${waterCount} أكواب ماء بنجاح!`);
+            
+            // Logic requested: Apply and go to habits.html
+            navigateTo('habits');
+        }
+
+        // --- HABITS.JS ---
+        // Initialize date
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('ar-SA', dateOptions);
+
+        function addHabit() {
+            const input = document.getElementById('new-habit-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            const ul = document.getElementById('habits-list');
+            const li = document.createElement('li');
+            li.className = "flex items-center justify-between p-3 bg-gray-50 rounded-lg group hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white";
+            li.innerHTML = `
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" class="w-5 h-5 text-accent rounded focus:ring-accent">
+                    <span class="text-lg">${text}</span>
+                </label>
+                <button onclick="this.parentElement.remove()" class="text-red-400 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-trash"></i></button>
+            `;
+            ul.appendChild(li);
+            input.value = '';
+        }
+
+        // --- CALORIES.JS ---
+        let totalCalories = 0;
+
+        function addFood() {
+            const nameInput = document.getElementById('food-name');
+            const calInput = document.getElementById('food-cals');
+            
+            const name = nameInput.value.trim();
+            const cals = parseInt(calInput.value);
+
+            if(!name || isNaN(cals)) return alert('الرجاء إدخال اسم الوجبة والسعرات');
+
+            // Update Total
+            totalCalories += cals;
+            document.getElementById('total-cals').innerText = totalCalories;
+
+            // Add to list
+            const tbody = document.getElementById('food-list');
+            const tr = document.createElement('tr');
+            tr.className = "border-b dark:border-gray-600";
+            tr.innerHTML = `
+                <td class="p-3">${name}</td>
+                <td class="p-3 text-red-500 font-bold">${cals}</td>
+                <td class="p-3 text-center">
+                    <button onclick="removeFood(this, ${cals})" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // Hide empty message
+            document.getElementById('empty-cal-msg').classList.add('hidden');
+
+            // Reset inputs
+            nameInput.value = '';
+            calInput.value = '';
+        }
+
+        function removeFood(btn, cals) {
+            btn.closest('tr').remove();
+            totalCalories -= cals;
+            document.getElementById('total-cals').innerText = totalCalories;
+            
+            if(document.getElementById('food-list').children.length === 0) {
+                document.getElementById('empty-cal-msg').classList.remove('hidden');
+            }
+        }
+
+        // --- MEAL.JS ---
+        const meals = [
+            { title: "شوفان بالتوت والمكسرات", desc: "وجبة إفطار غنية بالألياف والطاقة المستدامة." },
+            { title: "سمك سلمون مشوي", desc: "غني بأوميغا 3 يقدم مع خضار سوتيه." },
+            { title: "سلطة الكينوا", desc: "خفيفة ومغذية مع الخيار والطماطم والليمون." },
+            { title: "دجاج بالكاري الصحي", desc: "صدر دجاج مع صلصة كاري خفيفة وأرز بني." }
+        ];
+
+        function generateMeal() {
+            const randomIndex = Math.floor(Math.random() * meals.length);
+            const meal = meals[randomIndex];
+            document.getElementById('meal-title').innerText = meal.title;
+            document.getElementById('meal-desc').innerText = meal.desc;
+        }
+
+        function addToFavorites() {
+            const title = document.getElementById('meal-title').innerText;
+            const list = document.getElementById('fav-meals-list');
+            const li = document.createElement('li');
+            li.innerText = title;
+            list.appendChild(li);
+        }
+
+        // --- CONTACT.JS ---
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            alert('شكراً لتواصلك معنا! سيتم الرد عليك قريباً.');
+            e.target.reset();
+        }
+
+    </script>
+</body>
+</html>
